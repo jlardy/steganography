@@ -60,19 +60,13 @@ def encode(inputFile, inString, outputFileName='out.png', twoBits=True, stringIn
 
 
 # decodes an input file that has been previously encoded 
-def decode(inputFile, twoBits=False):
-    if twoBits:
-        numBits = 2
-    else:
-        numBits = 1
-    
+def decode(inputFile, twoBits=True):
+    numBits = 2 if twoBits else 1
     out = ''
     size = ''
-
     stop = False
     text = False
     foundSize = False
-
     # get the image
     data = np.array(Image.open(inputFile))
     # loop through and build a binary string from the lsb until the delimeter is included in the string 
@@ -94,11 +88,10 @@ def decode(inputFile, twoBits=False):
                         stop = True
                         text=True
                         break
-
     if text:
         return bin2txt(out)
     else:
-        print('No text found.')
+        return 'No text found.'
 
 
 def createSet(imgArr, binMessageLength, occupied):
@@ -112,10 +105,14 @@ def createSet(imgArr, binMessageLength, occupied):
             positions.add(newPos)
     return positions
 
-def insertRandomly(inputFile, inString, outputFileName='out.png', twoBits=True):
+def insertRandomly(inputFile, inString, outputFileName='out.png', twoBits=True, stringInput=True):
+    # set stringInput to false if you are passing a file path 
+    if not stringInput:
+        with open(inString, 'r') as txtfile:
+            inString = txtfile.read()
+
     complete = False
     numbits = 2 if twoBits else 1
-
     index = 0
     tmp = Image.open(inputFile)
     tmp.save('temp.png', optimized=True, quality=95)
@@ -126,7 +123,6 @@ def insertRandomly(inputFile, inString, outputFileName='out.png', twoBits=True):
     binString = str2bin(inString)
 
     fileSize = binaryFileSize(len(binString))
-
     if len(binString)+len(fileSize) >= (data.size)*numbits:
         print('Input is too long to be hidden within the image. ')
         return 
@@ -167,17 +163,14 @@ def insertRandomly(inputFile, inString, outputFileName='out.png', twoBits=True):
 
 
 def decodeRandomly(inputFile, twoBits=True):
-    
     numBits = 2 if twoBits else 1
-
     out = ''
     size = ''
-    
     data = np.array(Image.open(inputFile))
-
     complete = False
     index = 0
     occupied = set()
+
     for i, row in enumerate(data):
         if complete:
             break
@@ -192,7 +185,7 @@ def decodeRandomly(inputFile, twoBits=True):
                     size = getFileInt(size)
                     complete = True
                     break
-    
+
     pixelPositions = createSet(data, size//numBits, occupied)
 
     for pos in pixelPositions:
@@ -200,4 +193,4 @@ def decodeRandomly(inputFile, twoBits=True):
     
     return bin2txt(out)
 
-
+print(decodeRandomly('gui_run.png'))

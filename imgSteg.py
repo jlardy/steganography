@@ -25,7 +25,6 @@ def imgInImg(img1, img2, outputFileName='out.png'):
     length = binaryFileSize(img2.shape[0])
     width = binaryFileSize(img2.shape[1])
 
-
     if (img2[:,:,0].size * 8) + len(length) + len(width) > img1[:,:,0].size*2:
         answer = query_yes_no('Whoops the image is too large to input, would you like to resize it?')
         
@@ -43,12 +42,9 @@ def imgInImg(img1, img2, outputFileName='out.png'):
     
     # use PIL to optimize the file sizes before embedding them
     img1 = Image.fromarray(img1)
-    # img2 = Image.fromarray(img2)
     img1.save('temp.png', optimized=True, quality=95)
-    # img2.save('temp2.png', optimized=True, quality=95)
     img1 = np.array(Image.open('temp.png'))
-    # img2 = np.array(Image.open('temp2.png'))
-    
+
     # preprends the image demsions to each band string
     redStr = length + width
     greenStr = length + width
