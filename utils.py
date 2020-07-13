@@ -15,7 +15,6 @@ def int2bin(intInput): return '{0:08b}'.format(intInput)
 # returns integer from 8 bit binary 
 def bin2int(binstring): return int(binstring[0:8],2)
 
-
 # SINGLE BIT INSERTION
 def insertBit(integerInput, st, stIndex):
     converted = int2bin(integerInput)
@@ -32,6 +31,7 @@ def insertTwoBits(integerInput, st, stIndex):
     converted = converted[:-2] + st[stIndex] + st[stIndex+1] 
     return bin2int(converted)
 
+# Creates a binary string of length with a delimiter of 0's
 def binaryFileSize(length):
     size = ''
     extra = '11111111'
@@ -43,13 +43,13 @@ def binaryFileSize(length):
     size += delim
     return size
 
+# Calculates an integer from an array of binary data 
 def getFileInt(binary):
     data = intArrayFromBin(binary)
     out = 0
     for integer in data:
         out += integer
     return out
-
 
 def query_yes_no(question, default="yes"):
     # Ask a yes/no question via raw_input() and return their answer.

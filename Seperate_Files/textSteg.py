@@ -20,7 +20,6 @@ def encode(inputFile, inString, outputFileName='out.png', twoBits=True, stringIn
     index = 0
     tmp = Image.open(inputFile)
     tmp.save('temp.png', optimized=True, quality=95)
-
     # read image data into numpy array
     data = np.array(Image.open('temp.png'))
     # convert the input string to binary 
@@ -52,12 +51,11 @@ def encode(inputFile, inString, outputFileName='out.png', twoBits=True, stringIn
                 else:
                     column[i] = insertBit(column[i], binString, index)
                 index += numBits
-
-    
+                updateVariable(index, len(binString))
+ 
     new = Image.fromarray(data)
     new.save(outputFileName)
     os.remove("temp.png")
-
 
 # decodes an input file that has been previously encoded 
 def decode(inputFile, twoBits=True):
@@ -84,6 +82,7 @@ def decode(inputFile, twoBits=True):
                         size = getFileInt(size)
                 else:
                     out += int2bin(column[i])[-numBits:]
+                    updateVariable(len(out), size)
                     if len(out) == size:
                         stop = True
                         text=True
@@ -92,7 +91,6 @@ def decode(inputFile, twoBits=True):
         return bin2txt(out)
     else:
         return 'No text found.'
-
 
 def createSet(imgArr, binMessageLength, occupied):
     positions = set()
@@ -155,6 +153,7 @@ def insertRandomly(inputFile, inString, outputFileName='out.png', twoBits=True, 
             data[pos] = insertTwoBits(data[pos], binString, index)
         else:
             data[pos] = insertBit(data[pos], binString, index)
+        updateVariable(len(binString), index)
         index += numbits
     
     new = Image.fromarray(data)
@@ -190,7 +189,6 @@ def decodeRandomly(inputFile, twoBits=True):
 
     for pos in pixelPositions:
         out += int2bin(data[pos])[-numBits:]
+        updateVariable(len(out), len(pixelPositions))
     
     return bin2txt(out)
-
-print(decodeRandomly('gui_run.png'))

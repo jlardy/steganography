@@ -1,24 +1,29 @@
 from tkinter import filedialog
 from tkinter import *
-from main import *
 from imgSteg import *
 from textSteg import *
+from utils import *
 
 class gui:
-    def __init__(self):
-        self.root = Tk()
+    def __init__(self, root, load):
+        self.root = root
         self.root.geometry('500x500')
         self.root.resizable(0,0)
         self.decode = BooleanVar()
         self.stegType = BooleanVar()
         self.randomInsertion = BooleanVar()
-        
-        Radiobutton(self.root, text="Encode", variable=self.decode, value=0, command=lambda:self.encodeOrdecode()).place(relx=0.35, rely=0.1, anchor=CENTER)
-        Radiobutton(self.root, text="Decode", variable=self.decode, value=1, command=lambda:self.encodeOrdecode()).place(relx=0.65, rely=0.1, anchor=CENTER)
-                
-        Radiobutton(self.root, text="Text Stego", variable=self.stegType, value=0, command=lambda:self.getStegoType()).place(relx=0.35, rely=0.15, anchor=CENTER)
-        Radiobutton(self.root, text="Hidden Image", variable=self.stegType, value=1, command=lambda:self.getStegoType()).place(relx=0.65, rely=0.15, anchor=CENTER)
 
+        self.loading = Label(self.root, textvariable=load, width=len(load.get()))
+        
+        self.r1 = Radiobutton(self.root, text="Encode", variable=self.decode, value=0, command=lambda:self.encodeOrdecode())
+        self.r2 = Radiobutton(self.root, text="Decode", variable=self.decode, value=1, command=lambda:self.encodeOrdecode())
+
+        self.r1.place(relx=0.35, rely=0.1, anchor=CENTER)
+        self.r2.place(relx=0.65, rely=0.1, anchor=CENTER)        
+        self.r3 = Radiobutton(self.root, text="Text Stego", variable=self.stegType, value=0, command=lambda:self.getStegoType())
+        self.r4 = Radiobutton(self.root, text="Hidden Image", variable=self.stegType, value=1, command=lambda:self.getStegoType())
+        self.r3.place(relx=0.35, rely=0.15, anchor=CENTER)
+        self.r4.place(relx=0.65, rely=0.15, anchor=CENTER)
         self.input = entry(self.root, 'Input Image:', 'Open Image', .2, (("jpeg files","*.jpg"),('PNG files', '*.png'),("all files","*.*")), place=True)
         
         self.text = entry(self.root, 'Input Text File', 'Input Text', .3, [('txt files', '*.txt')], place=True)
@@ -37,14 +42,12 @@ class gui:
         self.runButton.place(relx=.5, rely=.8, anchor=CENTER)
 
         self.root.mainloop()
-
     def encodeOrdecode(self):
         if self.decode.get():
             # Decode
             for widget in self.encodingList:
                 if widget.isPlaced:
                     widget.remove()
-            
             self.saveLoc.move(.3)
             self.numBits.move(.4)
             self.checkBox.place_configure(relx=.5, rely=.5, anchor=CENTER)
@@ -55,10 +58,7 @@ class gui:
             self.numBits.move(.5)
             for widget in self.encodingList:
                 widget.place()
-            
             self.getStegoType()
-            
-       
 
     def getStegoType(self):
         if not self.decode.get():
@@ -89,27 +89,13 @@ class gui:
                 self.numBits.place()
 
     def run(self):
-        print(
-        'Encode:',self.decode.get(), '\n',
-        'StegType:',self.stegType.get(), '\n',
-        'Random Insertion:',self.randomInsertion.get(), '\n',
-        'Input Image:',self.input.data.get(), '\n',
-        'Text File Path:',self.text.data.get(), '\n',
-        'Second Image Path:',self.secondImg.data.get(), '\n',
-        'Save Location:',self.saveLoc.data.get(),'\n',
-        'NumBits:',self.numBits.data.get())
-
-        # encode
-        # decode
-        # insertRandomly
-        # decodeRandomly
-        # imgInImg
-        # getImgFromImg
-        
         # ENCODE
+        # print(getLoading())
+        self.loading.place(relx=.5, rely=.9, anchor=CENTER)
         if not self.decode.get():
             # image insertion
             if self.stegType.get():
+                # print(getLoading())
                 imgInImg(self.input.data.get(), self.secondImg.data.get(), self.saveLoc.data.get())
 
             # text insertion
@@ -135,7 +121,7 @@ class gui:
                 # regular decode
                 else:
                     with open(self.saveLoc.data.get(), 'w') as output:
-                        print(decode(self.input.data.get(), self.numBits.data.get()))
+                        output.write(decode(self.input.data.get(), self.numBits.data.get()))
 class entry:
     def __init__(self, root , infoText, buttonTXT, y, fileTypes,  Open=True, place=False):
         self.y = y
@@ -217,4 +203,13 @@ class radio:
         self.place()
 
 
-run = gui()
+def updateVariable(var, n):
+    if var and n:
+        out = '='* round(((var+1)/n) *10)
+        loadingBar.set('['+ out + '-'*(10-len(out)) + ']')
+        print(loadingBar.get())
+
+
+root = Tk()
+loadingBar = StringVar()
+gui(root, loadingBar)

@@ -20,7 +20,7 @@ def imgInImg(img1, img2, outputFileName='out.png'):
     # img2 is stored in img1 
     img1 = np.array(Image.open(img1))
     img2 = np.array(Image.open(img2))
-
+    print(img1.shape)
     # the dimensions of the image to be hidden
     length = binaryFileSize(img2.shape[0])
     width = binaryFileSize(img2.shape[1])
@@ -33,7 +33,7 @@ def imgInImg(img1, img2, outputFileName='out.png'):
 
             newLength = round(getFileInt(length) * ratio)
             newWidth = round(getFileInt(width) * ratio)
-
+            
             length = binaryFileSize(newLength)
             width = binaryFileSize(newWidth)
             img2 = np.array(Image.fromarray(img2).resize((newWidth, newLength)))
@@ -71,12 +71,11 @@ def imgInImg(img1, img2, outputFileName='out.png'):
             column[0] = insertTwoBits(column[0], redStr, index)
             column[1] = insertTwoBits(column[1], greenStr, index)
             column[2] = insertTwoBits(column[2], blueStr, index)
+            # updateVariable(index, len(redStr))
             index += 2
-
     new = Image.fromarray(img1)
     new.save(outputFileName)
     os.remove("temp.png")
-    # os.remove("temp2.png")
 
 def getImgFromImg(img, outputFileName='foundImage.png'):
     # get the image
@@ -120,6 +119,7 @@ def getImgFromImg(img, outputFileName='foundImage.png'):
                 rStr += int2bin(column[0])[-2:]
                 gStr += int2bin(column[1])[-2:]
                 bStr += int2bin(column[2])[-2:]
+                # updateVariable(len(rStr), size)
                 if len(rStr) == size:
                     stop = True
                     break
